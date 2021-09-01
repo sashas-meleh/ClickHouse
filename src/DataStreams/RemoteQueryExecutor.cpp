@@ -14,6 +14,7 @@
 #include <Interpreters/InternalTextLogsQueue.h>
 #include <IO/ConnectionTimeoutsContext.h>
 #include <Common/FiberStack.h>
+#include "Core/Protocol.h"
 #include <Client/MultiplexedConnections.h>
 #include <Client/HedgedConnections.h>
 #include <Storages/MergeTree/MergeTreeDataPartUUID.h>
@@ -382,6 +383,10 @@ std::optional<Block> RemoteQueryExecutor::processPacket(Packet packet)
             /// Pass logs from remote server to client
             if (auto log_queue = CurrentThread::getInternalTextLogsQueue())
                 log_queue->pushBlock(std::move(packet.block));
+            break;
+
+        case Protocol::Server::ProfileEvents:
+            /// Pass profile events from remote server to client
             break;
 
         default:
